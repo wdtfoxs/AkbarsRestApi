@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+
+        <!-- Console Appender -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MMM-dd HH:mm:ss a} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+
+        <!-- File Appender -->
+        <File name="File" fileName="log/app.log">
+            <PatternLayout pattern="%d{yyyy-MMM-dd HH:mm:ss a} [%t] %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"
+                                           modulate="true"/>
+            </Policies>
+        </File>
+
+    </Appenders>
+    <Loggers>
+        <!-- Log everything in hibernate -->
+        <Logger name="org.hibernate" level="info" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <!-- Log SQL statements -->
+        <Logger name="org.hibernate.SQL" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+        </Logger>
+
+        <!--<Logger name="com.zaxxer.hikari" level="debug" additivity="false">-->
+            <!--<AppenderRef ref="Console"/>-->
+            <!--<AppenderRef ref="File"/>-->
+        <!--</Logger>-->
+        <Logger name="org.hibernate.engine.jdbc.batch.internal.BatchingBatch" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+        </Logger>
+
+        <!-- Log JDBC bind parameters -->
+        <!--<Logger name="org.hibernate.type.descriptor.sql" level="trace" additivity="false">-->
+            <!--<AppenderRef ref="Console"/>-->
+            <!--<AppenderRef ref="File"/>-->
+        <!--</Logger>-->
+
+        <!-- Log custom packages -->
+        <Logger name="com.boraji.tutorial.hibernate" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+        </Logger>
+
+        <Logger name="org.springframework.jdbc" level="trace" additivity="false">
+            <appender-ref ref="File"/>
+            <appender-ref ref="Console"/>
+        </Logger>
+        <Logger name="org.springframework.transaction" level="trace" additivity="false">
+            <level value="DEBUG"/>
+            <appender-ref ref="File"/>
+            <appender-ref ref="Console"/>
+        </Logger>
+
+        <Root level="info" additivity="false">
+            <appender-ref ref="File"/>
+            <appender-ref ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
