@@ -87,12 +87,12 @@ public class UserService implements UserDetailsService {
             throw new RegistrationException("Wrong email format");
         if (user.getPhone() == null || !Pattern.compile(PHONE_PATTERN).matcher(user.getPhone()).matches())
             throw new RegistrationException("Invalid phone format");
+        if (user.getPassword() == null || user.getPassword().isEmpty())
+            throw new RegistrationException("Empty password");
         if (userRepository.existsByEmail(user.getEmail()))
             throw new RegistrationException("User with this email already exists");
         if (userRepository.existsByPhone(user.getPhone()))
             throw new RegistrationException("User with this phone already exists");
-        if (user.getPassword() == null || user.getPassword().isEmpty())
-            throw new RegistrationException("Empty password");
         if (logReg)
             log.info("Success register a user with data: " + user);
         userRepository.save(User.builder()
