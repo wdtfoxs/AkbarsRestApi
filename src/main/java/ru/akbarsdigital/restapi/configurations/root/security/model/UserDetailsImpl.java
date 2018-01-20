@@ -4,17 +4,20 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 public class UserDetailsImpl implements UserDetails {
 
     private final Long id;
     private final String email;
+    private final LocalDateTime lastPasswordChange;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String email) {
+    public UserDetailsImpl(Long id, String email, LocalDateTime lastPasswordChange) {
         this.id = id;
         this.email = email;
+        this.lastPasswordChange = lastPasswordChange;
         this.authorities = AuthorityUtils.commaSeparatedStringToAuthorityList("authenticated");
     }
 
@@ -59,5 +62,9 @@ public class UserDetailsImpl implements UserDetails {
 
     public String getEmail() {
         return email;
+    }
+
+    public LocalDateTime getLastPasswordChange() {
+        return lastPasswordChange;
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.akbarsdigital.restapi.configurations.root.security.model.ApiException;
+import ru.akbarsdigital.restapi.configurations.root.security.model.RestResponse;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -27,7 +27,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             log.error(e);
             response.setContentType("application/json");
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.getWriter().write(converter.getObjectMapper().writeValueAsString(new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Some problem into server")));
+            response.getWriter().write(converter.getObjectMapper().writeValueAsString(new RestResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Some problem into server")));
         }
     }
 }

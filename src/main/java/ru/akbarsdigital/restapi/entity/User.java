@@ -3,6 +3,7 @@ package ru.akbarsdigital.restapi.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Builder
 @Getter
@@ -45,4 +46,7 @@ public class User {
 
     @Column(name = "confirmed_code")
     private String confirmedCode;
+
+    @Column(name = "last_password_change")
+    private LocalDateTime lastPasswordChange;
 }

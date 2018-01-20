@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.akbarsdigital.restapi.entity.User;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -15,6 +16,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query(nativeQuery = true, value = "SELECT EXISTS (SELECT 1 FROM app_user WHERE phone = :phone)")
     boolean existsByPhone(@Param("phone") String phone);
+
+    @Query(nativeQuery = true, value = "SELECT last_password_change FROM app_user WHERE id = :id")
+    LocalDateTime lastPasswordChange(@Param("id") Long id);
 
     @Modifying
     @Query(nativeQuery = true, value = "UPDATE app_user SET confirmed = TRUE WHERE phone = :phone")

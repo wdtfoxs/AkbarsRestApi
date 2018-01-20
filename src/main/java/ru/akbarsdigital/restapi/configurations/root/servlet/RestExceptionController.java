@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import ru.akbarsdigital.restapi.configurations.root.security.model.ApiException;
+import ru.akbarsdigital.restapi.configurations.root.security.model.RestResponse;
 import ru.akbarsdigital.restapi.exception.*;
 
 @Log4j2
@@ -27,26 +27,26 @@ public class RestExceptionController extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return new ResponseEntity<>(new ApiException(
+        return new ResponseEntity<>(new RestResponse(
                 status.value(), ex.getMessage()), new HttpHeaders(), status);
     }
 
     @ExceptionHandler(RestException.class)
-    public ResponseEntity<ApiException> handleRestException(RestException e) {
+    public ResponseEntity<RestResponse> handleRestException(RestException e) {
         log(e);
-        return new ResponseEntity<>(new ApiException(HttpStatus.BAD_REQUEST.value(), e.getMessage()), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new RestResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAllException(Exception e) {
         log.error(e);
-        return new ResponseEntity<>(new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new RestResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Object> accessDeniedException(Exception e, WebRequest request) {
         log.info(e);
-        return new ResponseEntity<>(new ApiException(HttpStatus.FORBIDDEN.value(), e.getMessage()), new HttpHeaders(), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(new RestResponse(HttpStatus.FORBIDDEN.value(), e.getMessage()), new HttpHeaders(), HttpStatus.FORBIDDEN);
     }
 
     private void log(Exception e){

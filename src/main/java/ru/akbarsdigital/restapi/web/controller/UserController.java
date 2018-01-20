@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import ru.akbarsdigital.restapi.configurations.root.security.model.RestResponse;
 import ru.akbarsdigital.restapi.configurations.root.security.model.UserDetailsImpl;
 import ru.akbarsdigital.restapi.entity.User;
 import ru.akbarsdigital.restapi.service.UserService;
@@ -17,26 +18,21 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping
-    public ResponseEntity<String> get() {
-        return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
-    }
-
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(@RequestBody LoginDto user){
         return new ResponseEntity<>(new TokenDto(userService.authentication(user)), HttpStatus.OK);
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<String> registration(@RequestBody RegistrationDto user) {
+    public ResponseEntity<RestResponse> registration(@RequestBody RegistrationDto user) {
         userService.registrationNewUser(user);
-        return new ResponseEntity<>("Sms with code for confirm account sent to your phone ", HttpStatus.OK);
+        return new ResponseEntity<>(new RestResponse(HttpStatus.OK.value(), "Sms with code for confirm account sent to your phone"), HttpStatus.OK);
     }
 
     @PostMapping("/registration/confirm")
-    public ResponseEntity<String> confirm(@RequestBody ConfirmDto user) {
+    public ResponseEntity<RestResponse> confirm(@RequestBody ConfirmDto user) {
         userService.confirmAccount(user);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(new RestResponse(HttpStatus.OK.value(), "User confirmed"), HttpStatus.OK);
     }
 
     @GetMapping("/profile")
@@ -53,9 +49,9 @@ public class UserController {
     }
 
     @PostMapping("/profile/edit")
-    public ResponseEntity<String> editProfile(@RequestBody ProfileDto profile,
+    public ResponseEntity<RestResponse> editProfile(@RequestBody ProfileDto profile,
                                               @AuthenticationPrincipal UserDetailsImpl user){
         userService.editProfile(profile, user);
-        return new ResponseEntity<>("newToken", HttpStatus.OK);
+        return new ResponseEntity<>(new RestResponse(HttpStatus.OK.value(), "Profile edited"), HttpStatus.OK);
     }
 }

@@ -8,13 +8,17 @@ import org.springframework.security.authentication.dao.AbstractUserDetailsAuthen
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.akbarsdigital.restapi.configurations.root.security.model.JwtAuthenticationToken;
+import ru.akbarsdigital.restapi.configurations.root.security.model.UserDetailsImpl;
 import ru.akbarsdigital.restapi.configurations.root.security.util.JwtTokenUtils;
+import ru.akbarsdigital.restapi.service.UserService;
 
 @Log4j2
 public class JwtAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     @Autowired
     private JwtTokenUtils jwtTokenUtils;
+    @Autowired
+    private UserService userService;
 
     @Override
     public boolean supports(Class<?> authentication) {
@@ -28,10 +32,12 @@ public class JwtAuthenticationProvider extends AbstractUserDetailsAuthentication
     @Override
     protected UserDetails retrieveUser(String email, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
-        UserDetails parsedUser = jwtTokenUtils.parseToken(jwtAuthenticationToken.getToken());
+        UserDetailsImpl parsedUser = jwtTokenUtils.parseToken(jwtAuthenticationToken.getToken());
 
         if (parsedUser == null)
             throw new BadCredentialsException("JWT token is not valid");
+        if (!jwtTokenUtils.isCreatedBeforeLastPasswordReset(parsedUser.getLastPasswordChange(), userService.lastPasswordChange(parsedUser.getId())))
+            throw new BadCredentialsException("JWT token has expired");
 
         return parsedUser;
     }

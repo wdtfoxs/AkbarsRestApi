@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import ru.akbarsdigital.restapi.configurations.root.security.model.ApiException;
+import ru.akbarsdigital.restapi.configurations.root.security.model.RestResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +22,6 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
         log.info(e);
         response.setContentType("application/json");
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.getWriter().write(converter.getObjectMapper().writeValueAsString(new ApiException(HttpStatus.FORBIDDEN.value(), "Access is denied")));
+        response.getWriter().write(converter.getObjectMapper().writeValueAsString(new RestResponse(HttpStatus.FORBIDDEN.value(), "Access is denied")));
     }
 }
