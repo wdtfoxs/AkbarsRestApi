@@ -26,8 +26,8 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         } catch (RuntimeException e) {
             log.error(e);
             response.setContentType("application/json");
-            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.getWriter().write(converter.getObjectMapper().writeValueAsString(new RestResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Some problem into server")));
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.getWriter().write(converter.getObjectMapper().writeValueAsString(new RestResponse(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase())));
         }
     }
 }

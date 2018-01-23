@@ -40,7 +40,7 @@ public class RestExceptionController extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAllException(Exception e) {
         log.error(e);
-        return new ResponseEntity<>(new RestResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new RestResponse(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase()), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
