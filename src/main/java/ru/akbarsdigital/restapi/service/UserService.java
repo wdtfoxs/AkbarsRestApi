@@ -27,8 +27,7 @@ import java.util.regex.Pattern;
 @Log4j2
 @Service
 public class UserService implements UserDetailsService {
-    private static final String EMAIL_PATTERN = "^[_A-z0-9-+]+(\\.[_A-z0-9-]+)*@"
-            + "[A-z0-9-]+(\\.[A-z0-9]+)*(\\.[A-z]{2,})$";
+    private static final String EMAIL_PATTERN = "^[_A-z0-9-+]+(\\.[_A-z0-9-]+)*@[A-z0-9-]+(\\.[A-z0-9]+)*(\\.[A-z]{2,})$";
     private static final String PHONE_PATTERN = "^\\+7[0-9]{10}$";
     private static final String FILE_PATTERN = "^[A-z0-9]+\\.(jpg|png)$";
 
@@ -81,14 +80,6 @@ public class UserService implements UserDetailsService {
     public void registrationNewUser(RegistrationDto user) {
         if (logReg)
             log.info("Trying to register a user with data " + user);
-        if (user == null || (user.getPhone() == null && user.getEmail() == null && user.getPassword() == null))
-            throw new RegistrationException("Empty data");
-        if (user.getEmail() == null || !Pattern.compile(EMAIL_PATTERN).matcher(user.getEmail()).matches())
-            throw new RegistrationException("Wrong email format");
-        if (user.getPhone() == null || !Pattern.compile(PHONE_PATTERN).matcher(user.getPhone()).matches())
-            throw new RegistrationException("Invalid phone format");
-        if (user.getPassword() == null || user.getPassword().isEmpty())
-            throw new RegistrationException("Empty password");
         if (userRepository.existsByEmail(user.getEmail()))
             throw new RegistrationException("User with this email already exists");
         if (userRepository.existsByPhone(user.getPhone()))
@@ -108,12 +99,6 @@ public class UserService implements UserDetailsService {
     public void confirmAccount(ConfirmDto user) {
         if (logConfirm)
             log.info("Attempt to confirm the account with data " + user);
-        if (user == null || (user.getPhone() == null && user.getCode() == null))
-            throw new ConfirmationException("Empty data");
-        if (user.getPhone() == null)
-            throw new ConfirmationException("Empty phone");
-        if (user.getCode() == null)
-            throw new ConfirmationException("Empty code");
         Optional<User> userOptional = userRepository.findByPhone(user.getPhone());
         if (!userOptional.isPresent())
             throw new ConfirmationException("User not found");

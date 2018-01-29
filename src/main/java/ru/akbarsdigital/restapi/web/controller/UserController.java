@@ -4,12 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.akbarsdigital.restapi.configurations.root.security.model.RestResponse;
 import ru.akbarsdigital.restapi.configurations.root.security.model.UserDetailsImpl;
 import ru.akbarsdigital.restapi.entity.User;
+import ru.akbarsdigital.restapi.exception.ConfirmationException;
+import ru.akbarsdigital.restapi.exception.RegistrationException;
 import ru.akbarsdigital.restapi.service.UserService;
 import ru.akbarsdigital.restapi.web.dto.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/rest")
@@ -24,13 +29,17 @@ public class UserController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<RestResponse> registration(@RequestBody RegistrationDto user) {
+    public ResponseEntity<RestResponse> registration(@Valid @RequestBody RegistrationDto user, BindingResult result) {
+        if (result.hasErrors())
+            throw new RegistrationException(result.getFieldError().getDefaultMessage());
         userService.registrationNewUser(user);
         return new ResponseEntity<>(new RestResponse(HttpStatus.OK.value(), "Sms with code for confirm account sent to your phone"), HttpStatus.OK);
     }
 
     @PostMapping("/registration/confirm")
-    public ResponseEntity<RestResponse> confirm(@RequestBody ConfirmDto user) {
+    public ResponseEntity<RestResponse> confirm(@Valid @RequestBody ConfirmDto user, BindingResult result) {
+        if (result.hasErrors())
+            throw new ConfirmationException(result.getFieldError().getDefaultMessage());
         userService.confirmAccount(user);
         return new ResponseEntity<>(new RestResponse(HttpStatus.OK.value(), "User confirmed"), HttpStatus.OK);
     }
