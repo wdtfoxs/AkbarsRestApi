@@ -13,8 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.akbarsdigital.restapi.configurations.root.security.model.UserDetailsImpl;
 import ru.akbarsdigital.restapi.configurations.root.security.util.JwtTokenUtils;
 import ru.akbarsdigital.restapi.entity.User;
-import ru.akbarsdigital.restapi.exception.*;
+import ru.akbarsdigital.restapi.exception.AuthenticationException;
+import ru.akbarsdigital.restapi.exception.ConfirmationException;
+import ru.akbarsdigital.restapi.exception.EditException;
+import ru.akbarsdigital.restapi.exception.RestException;
 import ru.akbarsdigital.restapi.repository.UserRepository;
+import ru.akbarsdigital.restapi.util.EmailValidation;
+import ru.akbarsdigital.restapi.util.PhoneValidation;
 import ru.akbarsdigital.restapi.web.dto.ConfirmDto;
 import ru.akbarsdigital.restapi.web.dto.LoginDto;
 import ru.akbarsdigital.restapi.web.dto.ProfileDto;
@@ -27,8 +32,6 @@ import java.util.regex.Pattern;
 @Log4j2
 @Service
 public class UserService implements UserDetailsService {
-    private static final String EMAIL_PATTERN = "^[_A-z0-9-+]+(\\.[_A-z0-9-]+)*@[A-z0-9-]+(\\.[A-z0-9]+)*(\\.[A-z]{2,})$";
-    private static final String PHONE_PATTERN = "^\\+7[0-9]{10}$";
     private static final String FILE_PATTERN = "^[A-z0-9]+\\.(jpg|png)$";
 
     @Value("${log.auth}")
@@ -51,12 +54,6 @@ public class UserService implements UserDetailsService {
     public String authentication(LoginDto dto) {
         if (logAuth)
             log.info("Trying to auth a user with data: " + dto);
-        if (dto == null || (dto.getEmail() == null && dto.getPassword() == null))
-            throw new AuthenticationException("Empty data");
-        if (dto.getEmail() == null)
-            throw new AuthenticationException("Empty email");
-        if (dto.getPassword() == null)
-            throw new AuthenticationException("Empty password");
         User user = getUser(dto.getEmail());
         if (!user.isConfirmed())
             throw new AuthenticationException("User not confirmed");
@@ -80,10 +77,6 @@ public class UserService implements UserDetailsService {
     public void registrationNewUser(RegistrationDto user) {
         if (logReg)
             log.info("Trying to register a user with data " + user);
-        if (userRepository.existsByEmail(user.getEmail()))
-            throw new RegistrationException("User with this email already exists");
-        if (userRepository.existsByPhone(user.getPhone()))
-            throw new RegistrationException("User with this phone already exists");
         if (logReg)
             log.info("Success register a user with data: " + user);
         userRepository.save(User.builder()
@@ -128,14 +121,14 @@ public class UserService implements UserDetailsService {
             throw new EditException("Empty data");
         User db = getUser(user.getEmail());
         if (profile.getEmail() != null && !db.getEmail().equals(profile.getEmail())) {
-            if (!Pattern.compile(EMAIL_PATTERN).matcher(profile.getEmail()).matches())
+            if (!EmailValidation.validateEmail(profile.getEmail()))
                 throw new EditException("Wrong email format");
             if (userRepository.existsByEmail(profile.getEmail()))
                 throw new EditException("User with this email already exists");
             db.setEmail(profile.getEmail());
         }
         if (profile.getPhone() != null && !db.getPhone().equals(profile.getPhone())) {
-            if (!Pattern.compile(PHONE_PATTERN).matcher(profile.getPhone()).matches())
+            if (!PhoneValidation.validatePhone(profile.getPhone()))
                 throw new EditException("Invalid phone format");
             if (userRepository.existsByPhone(profile.getPhone()))
                 throw new EditException("User with this phone already exists");

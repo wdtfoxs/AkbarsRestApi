@@ -3,7 +3,9 @@ package ru.akbarsdigital.restapi.web.dto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.akbarsdigital.restapi.util.interfaces.Phone;
+import ru.akbarsdigital.restapi.util.EmailValidation;
+import ru.akbarsdigital.restapi.util.validator.interfaces.EmailUnique;
+import ru.akbarsdigital.restapi.util.validator.interfaces.Phone;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -13,10 +15,11 @@ import javax.validation.constraints.NotBlank;
 @ToString
 public class RegistrationDto {
     @NotBlank(message = "Empty email")
-    @Email(message = "Wrong email format", regexp = "^[_A-z0-9-+]+(\\.[_A-z0-9-]+)*@[A-z0-9-]+(\\.[A-z0-9]+)*(\\.[A-z]{2,})$")
+    @Email(message = "Wrong email format", regexp = EmailValidation.EMAIL_PATTERN)
+    @EmailUnique
     private String email;
     @NotBlank(message = "Empty password")
     private String password;
-    @Phone
+    @Phone(unique = true)
     private String phone;
 }

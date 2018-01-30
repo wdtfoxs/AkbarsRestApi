@@ -1,6 +1,6 @@
-package ru.akbarsdigital.restapi.util.interfaces;
+package ru.akbarsdigital.restapi.util.validator.interfaces;
 
-import ru.akbarsdigital.restapi.util.validation.PhoneValidator;
+import ru.akbarsdigital.restapi.util.validator.PhoneValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -13,7 +13,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = PhoneValidator.class)
 public @interface Phone {
-    String message() default "Invalid phone format";
+    String message() default "Invalid phone format or phone already exists";
+
+    boolean unique() default false;
 
     Class<?>[] groups() default {};
 
